@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head><title>Lorcana Proxies</title>
+<style>
+body { width:100%; text-align:center }
+div { margin:0; padding:0; line-height:0; text-align:center } img { margin:0; padding:0; border:1px solid #222 }
+form { margin:1em } input { width:30em }
+.page { width:200px; height:290px; padding:5px; margin:5px; vertical-align:top; display:inline-block; border: 1px solid black; box-shadow:5px 5px 5px grey }
+.error { padding:3px; line-height:1em; background-color:#fee; color:red }
+img { width:63px; height:88px }
+@media print {
+ body { margin:0; padding:0 } form { display:none }
+ .page { width:auto; height:auto; padding:0; margin:0; border:0 none; box-shadow: unset }
+ img { width:63mm; height:88mm }
+}</style></head>
+<body>
+<form action="javascript:loadDeck()">
+<input type="text" name="url" id="url" placeholder="dreamborn deck url" autofocus />
+<button type="submit">Load</button>
+<button onclick="window.print()">Print</button></form>
+<div id="main"></div>
+<script>
+function loadDeck() {
+  resetPages();
+
+  const url = document.getElementById('url').value;
+  const apiUrl = toApi(url);
+  if (apiUrl == 'invalid') {
+    displayError('Invalid deck url. It must start with "https://dreamborn.ink/..."');
+    return;
+  }
+
+  fetchImages(apiUrl);
+}
+function toApi(url) {
+  const regex = /https:\/\/dreamborn\.ink\/(?:[a-z]{2}\/)?(decks|builder)\/(.+)/;
+  const match = url.match(regex);
+
+  if (match && match[1]) {
+    return `https://dreamborn.ink/api/_tts/decks/${match[2]}`;
+  }
+  return 'invalid';
+}
+async function fetchImages(url) {
+  const response = await fetch(url);
+  if (!response.ok) {
+    displayError('Cannot fetch deck data');
+    return;
+  }
+
+  const data = await response.json();
+  if (!Array.isArray(data.cards)) {
+    displayError('Cannot read deck content');
+    return;
+  }
+
+  let pageElement = addPage();
+  let cpt = 0;
+  data.cards.forEach(card => {
+    if (card.imgUrl) {
+      if (cpt == 9) {
+          pageElement = addPage();
+          cpt = 0;
+      }
+      addCard(pageElement, card.imgUrl);
+      cpt++;
+    }
+  });
+}
+function resetPages() {
+  const main = document.getElementById('main');
+  while (main.firstChild) {
+    main.removeChild(main.firstChild);
+  }
+}
+function displayError(text) {
+  const messageElement = document.createElement('p');
+  messageElement.classList.add('error');
+  messageElement.appendChild(document.createTextNode(text));
+  document.getElementById('main').appendChild(messageElement);
+}
+function addPage() {
+  const pageElement = document.createElement('div');
+  pageElement.classList.add('page');
+  document.getElementById('main').appendChild(pageElement);
+  return pageElement;
+}
+function addCard(pageElement, imgUrl) {
+  const cardElement = document.createElement('img');
+  cardElement.src = imgUrl;
+  pageElement.appendChild(cardElement);
+}
+</script>
+</body>
+</html>
