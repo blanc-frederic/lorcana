@@ -3,16 +3,21 @@
 <head><title>Lorcana Proxies</title>
 <style>
 body { width:100%; text-align:center }
-div { margin:0; padding:0; line-height:0; text-align:center } img { margin:0; padding:0; border:1px solid #222; width:63px; height:88px }
-form { margin:1em } input { width:30em }
-.page { width:200px; height:287px; text-align:left; padding:7px; margin:5px; vertical-align:top; display:inline-block; border: 1px solid black; box-shadow:5px 5px 5px grey }
+div { margin:0; padding:0; line-height:0; text-align:center }
+img { width:63px; height:88px; margin:0; padding:0; border:0 none; border-top:1px solid #222; border-right:1px solid #222 }
+form { margin:1em }
+input { width:30em }
+.page { width:196px; height:283px; text-align:left; padding:7px; margin:5px; vertical-align:top; display:inline-block; border: 1px solid black; box-shadow:5px 5px 5px grey }
 .error { padding:3px; line-height:1em; background-color:#fee; color:red }
 @media print {
  @page { margin: 8mm }
- body { margin:0; padding:0 } form { display:none }
+ body { margin:0; padding:0 }
+ form { display:none }
  .page { width:auto; height:auto; padding:0; margin:0; border:0 none; box-shadow: unset }
  img { width:63mm; height:88mm }
-}</style></head>
+}
+</style>
+</head>
 <body>
 <form action="javascript:loadDeck()">
 <input type="text" name="url" id="url" placeholder="dreamborn deck url" autofocus />
@@ -93,7 +98,7 @@ async function fetchImages(id, lang) {
   }
 }
 function findCardsList(data) {
-  const regex = /^\d{3}-\d{3}$/;
+  const regex = /^\d{3}\/[0-9a-f]{40}$/;
   for (const item of data) {
     if (
       typeof item === 'object' &&
