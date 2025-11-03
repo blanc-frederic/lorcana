@@ -98,7 +98,7 @@ async function fetchImages(id, lang) {
   }
 }
 function findCardsList(data) {
-  const regex = /^\d{3}\/[0-9a-f]{40}$/;
+  const regex = /^\d{3}[\/-][0-9a-f]{3,40}$/;
   for (const item of data) {
     if (
       typeof item === 'object' &&
